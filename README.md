@@ -1,3 +1,2 @@
 # alpha
-A private protocol proxy build by golang
- 
+A private protocol proxy build by golang.
