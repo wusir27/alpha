@@ -3,6 +3,7 @@ package local
 import (
 	"fmt"
 	"net"
+	"sync"
 )
 
 func LocalBootstrape() {
@@ -20,6 +21,11 @@ func LocalBootstrape() {
 		}
 		go process(client)
 	}
+}
+
+func Shutdown(wg *sync.WaitGroup){
+	defer wg.Done()
+	//shutdwon resource
 }
 
 func process(client net.Conn)  {

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"io"
 	"net"
+	"fmt"
+	"encoding/binary"
 )
 
 func Socks5Auth(client net.Conn) (err error) {
@@ -53,7 +55,7 @@ func Socks5Connect(client net.Conn)(net.Conn, error)  {
 		if n != 4 {
 			return nil, errors.New("invalid IPv4:" + err.Error())
 		}
-		addr = fmt.Springf("%d.%d.%d.%d", buf[0], buf[1], buf[2], buf[3])
+		addr = fmt.Sprintf("%d.%d.%d.%d", buf[0], buf[1], buf[2], buf[3])
 	case 3:
 		n, err = io.ReadFull(client, buf[:1])
 		if n != 1 {
@@ -64,18 +66,18 @@ func Socks5Connect(client net.Conn)(net.Conn, error)  {
 		if n != addrLen {
 			return nil, errors.New("invalid hostname:" + err.Error())
 		}
-		addr := string(buf[:addrLen])
+		addr = string(buf[:addrLen])
 	case 4 :
 		return nil, errors.New("IPv6 not supported yet")
 	default:
 		return nil, errors.New("invalid atyp")
 	}
 
-	n,err := io.ReadFull(client, buf[:2])
+	n,err = io.ReadFull(client, buf[:2])
 	if n != 2 {
 		return nil, errors.New("invalid port:"+ err.Error())
 	}
-	port := binary.BigEndian.Unint16(buf[:2])
+	port := binary.BigEndian.Uint16(buf[:2])
 
 	destAddrPort := fmt.Sprintf("%s:%d", addr, port)
 
@@ -85,7 +87,7 @@ func Socks5Connect(client net.Conn)(net.Conn, error)  {
 		return nil, errors.New("dial dst err:" + err.Error())
 	}
 
-	n, err := client.Write([]byte{0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0})
+	n, err = client.Write([]byte{0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0})
 
 	if err != nil{
 		dest.Close()
@@ -96,7 +98,7 @@ func Socks5Connect(client net.Conn)(net.Conn, error)  {
 }
 
 func Socks5Forward(client net.Conn, target net.Conn)(err error)  {
-	forward := fun(src, dest net.Conn){
+	forward := func(src, dest net.Conn){
 		defer src.Close()
 		defer dest.Close()
 		io.Copy(src, dest)
