@@ -25,19 +25,20 @@ func LocalBootstrape() {
 
 func Shutdown(wg *sync.WaitGroup){
 	defer wg.Done()
+	fmt.Printf("Alpha client stopped.\n")
 	//shutdwon resource
 }
 
 func process(client net.Conn)  {
 	if err := Socks5Auth(client); err != nil{
-		fmt.Printf("Socks5 auth error:%v",err)
+		fmt.Printf("Socks5 auth error:%v\n",err)
 		client.Close()
 		return
 	}
 
 	target, err := Socks5Connect(client)
 	if err != nil{
-		fmt.Printf("connect error:%v",err)
+		fmt.Printf("connect error:%v\n",err)
 		return
 	}
 
